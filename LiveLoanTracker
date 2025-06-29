@@ -1,0 +1,35 @@
+import { useEffect, useState } from "react";
+
+export default function LiveLoanTracker() {
+  const principal = 17600;
+  const annualRate = 0.17;
+  const startDate = new Date("2024-04-22T00:00:00");
+
+  const [balance, setBalance] = useState(principal);
+
+  useEffect(() => {
+    const updateBalance = () => {
+      const now = new Date();
+      const timeElapsed = (now - startDate) / (1000 * 60 * 60 * 24 * 365.25); // years
+      const accrued = principal * Math.pow(1 + annualRate, timeElapsed);
+      setBalance(accrued);
+    };
+
+    updateBalance();
+    const interval = setInterval(updateBalance, 1000); // update every second
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
+      <h1 className="text-4xl font-bold mb-4">💸 Real-Time Loan Balance</h1>
+      <p className="text-lg mb-2">Original Loan: ${principal.toLocaleString()}</p>
+      <p className="text-lg mb-2">Interest Rate: {(annualRate * 100).toFixed(2)}% annually</p>
+      <p className="text-lg mb-6">Start Date: {startDate.toDateString()}</p>
+      <div className="bg-gray-800 p-6 rounded-xl shadow-xl">
+        <p className="text-2xl">Current Balance:</p>
+        <p className="text-5xl font-mono mt-2">${balance.toFixed(2)}</p>
+      </div>
+    </div>
+  );
+}
